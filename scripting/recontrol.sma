@@ -9,12 +9,12 @@ enum _:Data
 {
 	Team,
 	He,
-    Smoke,
-    Flash,
+	Smoke,
+	Flash,
 	Float:Health,
 	Float:Origin[3],
-    Float:Velocity[3],
-    Float:Angles[3],
+	Float:Velocity[3],
+	Float:Angles[3],
 };
 
 new g_FirstId[33], g_SecondId[33][33], g_arrData[33][Data];
@@ -28,18 +28,18 @@ new bool:g_GiveWeapons[33];
 public plugin_init()
 {
 	register_plugin("ReControl", "1.0", "Conor");
-	
+
 	register_clcmd("drop", "Control");
 	register_clcmd("say /co", "Control");
 	register_clcmd("say_team /co", "Control");
 	register_clcmd("say /control", "Control");
 	register_clcmd("say_team /control", "Control");
-	
+
 	register_clcmd("say /re", "Replace");
 	register_clcmd("say_team /re", "Replace");
 	register_clcmd("say /replace", "Replace");
 	register_clcmd("say_team /replace", "Replace");
-	
+
 	RegisterHookChain(RG_CSGameRules_PlayerSpawn, "@CSGameRules_PlayerSpawn", true);
 }
 
@@ -78,9 +78,9 @@ public Menu(id)
 	if ((is_user_alive(id) && g_Control[id] || is_user_alive(id) && !g_Control[id] || !is_user_alive(id) && !g_Control[id]) && (rg_get_user_team(id) == 1 || rg_get_user_team(id) == 2))
 	{
 		new m_Menu = menu_create(fmt("%s", g_Control[id] ? "\rChoose a player to give control" : "\rSelect a player to replace"), "MenuHandler");
-		
+
 		new Players[32], Count, szPlayer[10], Player, szName[MAX_NAME_LENGTH], szBuffer[64];
-		
+
 		if (g_Control[id])
 		{
 			switch (rg_get_user_team(id))
@@ -95,27 +95,27 @@ public Menu(id)
 		for (new i; i < Count; i++)
 		{
 			Player = Players[i];
-			
+
 			if (id == Player)
 				continue;
-			
+
 			get_user_name(Player, szName, charsmax(szName));
-			
+
 			num_to_str(Player, szPlayer, charsmax(szPlayer));
-			
+
 			formatex(szBuffer, charsmax(szBuffer), "%s \d[\rInvited\d]", szName);
-			
+
 			if (g_Invited[Player])
 				menu_additem(m_Menu, szBuffer, szPlayer);
 			else
 				menu_additem(m_Menu, szName, szPlayer);
 		}
-		
+
 		menu_setprop(m_Menu, MPROP_EXIT, MEXIT_ALL);
-		
+
 		menu_display(id, m_Menu, 0);
 	}
-	
+
 	return;
 }
 
@@ -123,16 +123,16 @@ public MenuHandler(id, m_Menu, szKeys)
 {
 	if (!is_user_connected(id))
 	{
-        menu_destroy(m_Menu);
-        return;
-    }
+		menu_destroy(m_Menu);
+		return;
+	}
 	
 	if (szKeys == MENU_EXIT)
-    {
-        menu_destroy(m_Menu);
-        return;
-    }
-	
+	{
+		menu_destroy(m_Menu);
+		return;
+	}
+
 	new szData[6], szName[64], _Access, _Callback;
 	
 	menu_item_getinfo(m_Menu, szKeys, _Access, szData, charsmax(szData), szName, charsmax(szName), _Callback);
@@ -201,9 +201,9 @@ public ConfirmationHandler(id, m_Confirmation, szKeys)
 {
 	if (!is_user_connected(id))
 	{
-        menu_destroy(m_Confirmation);
-        return;
-    }
+		menu_destroy(m_Confirmation);
+		return;
+	}
 	
 	new FirstId = g_FirstId[id];
 	new SecondId = g_SecondId[FirstId][id];
@@ -217,7 +217,7 @@ public ConfirmationHandler(id, m_Confirmation, szKeys)
 			ReControl(SecondId);
 			
 			show_menu(FirstId, 0, "", 1);
-        }
+		}
 		case 1:
 		{
 			client_print_color(FirstId, SecondId, "%s ^3%n^1 refused to %s", g_Prefix, SecondId, g_Control[FirstId] ? "take control" : "replace");
@@ -250,33 +250,33 @@ public GiveWeapons(id)
 		
 		switch (rg_get_user_team(id))
 		{
-            case 1:
+			case 1:
 			{
 				rg_set_user_footsteps(id, true);
 				
 				if (g_arrData[FirstId][He])
 				{
-                    rg_give_item(id, "weapon_hegrenade");
-                    rg_set_user_bpammo(id, WEAPON_HEGRENADE, g_arrData[FirstId][He]);
-                }
+					rg_give_item(id, "weapon_hegrenade");
+					rg_set_user_bpammo(id, WEAPON_HEGRENADE, g_arrData[FirstId][He]);
+				}
 				
 				if (g_arrData[FirstId][Flash])
 				{
-                    rg_give_item(id, "weapon_flashbang");
-                    rg_set_user_bpammo(id, WEAPON_FLASHBANG, g_arrData[FirstId][Flash]);
-                }
+					rg_give_item(id, "weapon_flashbang");
+					rg_set_user_bpammo(id, WEAPON_FLASHBANG, g_arrData[FirstId][Flash]);
+				}
 				
 				if (g_arrData[FirstId][Smoke])
 				{
-                    rg_give_item(id, "weapon_smokegrenade");
-                    rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, g_arrData[FirstId][Smoke]);
-                }
-            }
-            case 2: rg_set_user_footsteps(id, false);
+					rg_give_item(id, "weapon_smokegrenade");
+					rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, g_arrData[FirstId][Smoke]);
+				}
+			}
+		case 2: rg_set_user_footsteps(id, false);
 		}
 		
 		g_GiveWeapons[id] = false;
-    }
+	}
 }
 
 public ReControl(id)
