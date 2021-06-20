@@ -27,7 +27,7 @@ new bool:g_GiveWeapons[33];
 
 public plugin_init()
 {
-	register_plugin("ReControl", "1.0", "Conor");
+	register_plugin("ReControl", "1.1", "Conor");
 
 	register_clcmd("drop", "Control");
 	register_clcmd("say /co", "Control");
@@ -53,8 +53,10 @@ public client_disconnected(id)
 
 @CSGameRules_PlayerSpawn(id)
 {
-	if (is_user_alive(id))
-		GiveWeapons(id);
+	if (is_user_alive(id)) {
+		GiveAngles(id);
+		set_task(0.1, "GiveWeapons", id);
+	}
 }
 
 public Control(id)
@@ -231,7 +233,7 @@ public ConfirmationHandler(id, m_Confirmation, szKeys)
 	return;
 }
 
-public GiveWeapons(id)
+public GiveAngles(id)
 {
 	if (is_user_alive(id) && g_GiveWeapons[id])
 	{
@@ -239,14 +241,23 @@ public GiveWeapons(id)
 		
 		rg_remove_all_items(id);
 		
-		rg_give_item(id, "weapon_knife");
-		
 		set_entvar(id, var_flags, get_entvar(id, var_flags) | FL_DUCKING);
 		set_entvar(id, var_health, g_arrData[FirstId][Health]);
 		set_entvar(id, var_origin, g_arrData[FirstId][Origin]);
 		set_entvar(id, var_velocity, g_arrData[FirstId][Velocity]);
 		set_entvar(id, var_angles, g_arrData[FirstId][Angles]);
 		set_entvar(id, var_fixangle, 1);
+	}
+}
+
+public GiveWeapons(id)
+{
+	if (is_user_alive(id) && g_GiveWeapons[id])
+	{
+		new FirstId = g_FirstId[id];
+		rg_remove_all_items(id);
+
+        rg_give_item(id, "weapon_knife");
 		
 		switch (rg_get_user_team(id))
 		{
@@ -342,3 +353,4 @@ public task_Response(Parms[], task_id)
 	
 	return;
 }
+
