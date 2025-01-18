@@ -39,22 +39,17 @@ new TransferType:g_eTransferType[MAX_PLAYERS + 1], g_iTransferPlayer[MAX_PLAYERS
 
 public plugin_init()
 {
-	register_plugin("ReControl", "1.2", "OpenHNS"); // Thanks Conor, Denzer
+	register_plugin("Match: ReControl", "1.2", "OpenHNS"); // Thanks Conor, Denzer
 
 	register_clcmd("drop", "Control");
-	register_clcmd("say /co", "Control");
-	register_clcmd("say_team /co", "Control");
-	register_clcmd("say /control", "Control");
-	register_clcmd("say_team /control", "Control");
+	RegisterSayCmd("co", "co", "Control");
+	RegisterSayCmd("control", "con", "Control");
 
-	register_clcmd("say /re", "Replace");
-	register_clcmd("say_team /re", "Replace");
-	register_clcmd("say /replace", "Replace");
-	register_clcmd("say_team /replace", "Replace");
+	RegisterSayCmd("re", "re", "Replace");
+	RegisterSayCmd("replace", "rep", "Replace");
 
 	register_clcmd("hns_transfer", "ReplaceAdmin");
-	register_clcmd("say /rea", "ReplaceAdmin");
-	register_clcmd("say_team /rea", "ReplaceAdmin");
+	RegisterSayCmd("rea", "rea", "ReplaceAdmin");
 
 	RegisterHookChain(RG_CSGameRules_PlayerSpawn, "@CSGameRules_PlayerSpawn", true);
 }
